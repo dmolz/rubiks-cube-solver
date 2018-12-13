@@ -1,4 +1,4 @@
-# rubiks-cube-solver
+# Rubik's Cube Solver Program
 C++ program designed to solve a Rubik's Cube. Input the current state of a cube and get a list of moves to solve the cube from that state.
 
 ## How to use:
