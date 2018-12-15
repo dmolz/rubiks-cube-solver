@@ -94,7 +94,8 @@ void print_cube(CubeType& Cube) {
 char find_adj_edge(int i, int j, CubeType& Cube) {
 	char current = Cube[i][8];
 
-	/*  			-------------
+	// Visual Representation of Cube
+	/*  				-------------
 					| 0 | 1 | 2 |
 					-------------
 					| 7 | W | 3 |
@@ -116,19 +117,19 @@ char find_adj_edge(int i, int j, CubeType& Cube) {
 	*/
 
 	if (current == 'w') {
-		if 		(j == 1) return Cube[3][1];
+		if 	(j == 1) return Cube[3][1];
 		else if (j == 3) return Cube[2][1];
 		else if (j == 5) return Cube[1][1];
 		else if (j == 7) return Cube[4][1];
 	}
 	else if (current == 'r') {
-		if 		(j == 1) return Cube[0][5];
+		if 	(j == 1) return Cube[0][5];
 		else if (j == 3) return Cube[2][7];
 		else if (j == 5) return Cube[5][1];
 		else if (j == 7) return Cube[4][3];
 	}
 	else if (current == 'b') {
-		if 		(j == 1) return Cube[0][3];
+		if 	(j == 1) return Cube[0][3];
 		else if (j == 3) return Cube[3][7];
 		else if (j == 5) return Cube[5][3];
 		else if (j == 7) return Cube[1][3];
@@ -453,21 +454,25 @@ void rotate_counter_clockwise(char side, CubeType& Cube, std::vector<std::string
 	}
 }
 
+// Undo clockwise rotation
+// (different from just rotating counter-clockwise because it also modifies solution vector)
 void undo_clockwise(char side, CubeType& Cube, std::vector<std::string>& solution) {
 	rotate_counter_clockwise(side,Cube,solution);
 	solution.pop_back();
 	solution.pop_back();
 }
 
+// Undo counter-clockwise rotation
+// (different from just rotating clockwise because it also modifies solution vector)
 void undo_counter_clockwise(char side, CubeType& Cube, std::vector<std::string>& solution) {
 	rotate_clockwise(side,Cube,solution);
 	solution.pop_back();
 	solution.pop_back();
 }
 
+// This function is for the preliminary non-recursive method
 // Priority for cross is RED->BLUE->ORANGE->GREEN
 void solve_white_cross(CubeType& Cube, std::vector<std::string>& solution) {
-	
 	// First, solve the white and red edge piece
 	while (!(Cube[0][5] == 'w' && find_adj_edge(0,5,Cube) == 'r')) {
 		// CASE 1:
@@ -836,6 +841,7 @@ void solve_white_cross_recursive(CubeType& Cube, std::vector<CubeType>& solved_c
 
 }
 
+// Goes through series of rotations in modifying the cube until white side and first layer are solved
 void solve_first_layer_recursive(CubeType& Cube, std::vector<CubeType>& solved_cubes, std::vector<std::string>& solution,
 	std::vector<std::vector<std::string> >& all_solutions, const std::vector<char>& colors,
 	int last_turn, char last_color, int count, int height) {
@@ -846,16 +852,19 @@ void solve_first_layer_recursive(CubeType& Cube, std::vector<CubeType>& solved_c
 							  Cube[2][0] == 'b' && Cube[2][1] == 'b' && Cube[2][2] == 'b' &&
 							  Cube[3][0] == 'o' && Cube[3][1] == 'o' && Cube[3][2] == 'o' &&
 							  Cube[4][0] == 'g' && Cube[4][1] == 'g' && Cube[4][2] == 'g';
+	// Base case: White side and first layer are solved
 	if (white_side_solved && first_layer_solved) {
 		all_solutions.push_back(solution);
 		solved_cubes.push_back(Cube);
 		return;
 	}
+	// Bad solution case: too many moves (should be less than 20)
 	else if (height >= 20) {
 		// height = 0;
 		return;
 	}
 
+	// Try each move once, branch out in recursive tree
 	for (int i = 0; i < colors.size(); i++) {
 		for (int j = 0; j < 2; j++) {
 			if (count == 2) continue;
